@@ -1,0 +1,36 @@
+{
+  "summary": "Live backend regression and mobile web screening flow tested. Backend passed 4/4 tests; landing through NPDR results and export passed. Scan-another navigation showed duplicate upload-screen nodes and did not resolve cleanly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Results -> Scan another image",
+        "issue": "After tapping scan-another, two upload-screen nodes remained in the DOM and the expected upload screen did not resolve unambiguously within 8 seconds.",
+        "affected_testIDs": ["scan-another-btn", "upload-screen"]
+      }
+    ],
+    "design_issues": [],
+    "react_native_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_retina_api.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Investigate Expo Router replace/back-stack behavior after Scan another image; ensure only one upload screen is mounted and navigation settles.",
+    "Align frontend API configuration with the required EXPO_BACKEND_URL contract or explicitly document EXPO_PUBLIC_BACKEND_URL as the supported key."
+  ],
+  "critical_code_review_comments": [
+    "Backend server.py supplies localhost fallback values for MONGO_URL and DB_NAME, contrary to the fail-fast environment configuration requirement.",
+    "retinaApi.ts includes a local sample fallback, which is a MOCKED/FALLBACK data path if the live samples API fails; live tests used the real API successfully.",
+    "Expo startup logs report a React Native DevTools Electron sandbox warning, but Metro bundled and the web app rendered."
+  ],
+  "updated_files": ["/app/backend/tests/test_retina_api.py", "/app/test_reports/iteration_1.json"],
+  "success_rate": {"backend": "100%", "frontend": "90%"},
+  "seed_data_creation": "Created live screening records via sample prediction requests; no seed data was added.",
+  "retest_needed": true,
+  "should_call_test_agent_after_fix": true,
+  "context_for_next_testing_agent": "Use the public preview URL from frontend/.env. Core normal and NPDR sample flows pass; focus retesting results-to-upload navigation and verify export semantics beyond tap response.",
+  "rca_of_issue": "The scan-another action calls clearSelection() and router.replace('/upload'). The preview then exposed two upload-screen testID nodes, suggesting an Expo Router retained/stale route tree or replace transition issue; reproduce with DOM count and URL inspection before changing navigation structure."
+}

@@ -1,0 +1,145 @@
+{
+  "app_name": "RETINA-DX",
+  "personality": "7 Dark-First Utility DARK",
+  "personality_one_liner": "Command-center precision ophthalmology platform combining cutting-edge AI neural screening with clinical authority.",
+  "color": {
+    "surface": "#0A0E17",
+    "onSurface": "#F0F4F8",
+    "surfaceSecondary": "#131C2E",
+    "onSurfaceSecondary": "#C5D1E0",
+    "surfaceTertiary": "#1C2841",
+    "onSurfaceTertiary": "#94A9C9",
+    "surfaceInverse": "#FFFFFF",
+    "onSurfaceInverse": "#0A0E17",
+    "brand": "#00E5FF",
+    "brandPrimary": "#00E5FF",
+    "onBrandPrimary": "#0A0E17",
+    "brandSecondary": "#00A8B5",
+    "onBrandSecondary": "#FFFFFF",
+    "brandTertiary": "rgba(0, 229, 255, 0.12)",
+    "onBrandTertiary": "#00E5FF",
+    "success": "#10B981",
+    "onSuccess": "#0A0E17",
+    "warning": "#F59E0B",
+    "onWarning": "#0A0E17",
+    "error": "#EF4444",
+    "onError": "#0A0E17",
+    "info": "#3B82F6",
+    "onInfo": "#0A0E17",
+    "border": "#223254",
+    "borderStrong": "#00E5FF",
+    "divider": "#192842",
+    "muted": "#7A92B6",
+    "onBrand": "#0A0E17"
+  },
+  "typography": {
+    "displayFontFamily": "BarlowCondensed_600SemiBold",
+    "textFontFamily": "Satoshi-Regular",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous command-center padding with tactile touch targets and precise vertical rhythm.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "0",
+  "navigation": "bottom_tabs",
+  "icon_set": "MaterialCommunityIcons",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use frosted glass on sticky headers, bottom tab bar, and scanner overlays",
+      "Pair blur with translucent cyan-tinted base for absolute clinical readability"
+    ],
+    "dont's": [
+      "Never blur dense data tables or biometric indicators",
+      "Do not exceed two blur surfaces per screen"
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Landing",
+      "purpose": "Hero entry point featuring RETINA-DX branding, retinal-inspired scan animation, Start Screening CTA, and Coming Soon Glaucoma/AMD pipelines.",
+      "states": {
+        "loading": "Centered cyan pulse spinner over deep obsidian canvas.",
+        "empty": "No pipeline items available.",
+        "error": "Failed to load clinical datasets. Retry button."
+      },
+      "layout": "Vertical scroll with safe-area padding. Top status bar, glowing neural hero element, tagline, primary CTA sticky at bottom, and modular pipeline cards below."
+    },
+    {
+      "name": "Upload",
+      "purpose": "Fundus image acquisition supporting pre-loaded sample selector (Low-risk & Signs Detected) and camera/gallery file upload.",
+      "states": {
+        "loading": "Preparing sample fundus feed...",
+        "empty": "No sample scans currently pre-cached.",
+        "error": "Image decode error. Please select a valid JPEG/PNG fundus scan."
+      },
+      "layout": "Drop zone container with dashed cyan border, preview window, pre-loaded sample selector shelf, and sticky 'Analyze Image with AI' button."
+    },
+    {
+      "name": "Analysis",
+      "purpose": "Real-time AI Neural Scanner with animated cyan scanning ring and progress steps: Image received, Preparing analysis, AI screening in progress.",
+      "states": {
+        "loading": "Neural weights evaluating fundus vasculature...",
+        "empty": "Analysis queue empty.",
+        "error": "Inference timeout. Restart screening."
+      },
+      "layout": "Centered radial scanner with pulsing cyan waveforms, live progress percentage, step checklist, and abort/cancel fallback."
+    },
+    {
+      "name": "Results",
+      "purpose": "Comprehensive retinal screening report card displaying risk badge, confidence %, detected biomarkers, recommendations, and exportable summary card.",
+      "states": {
+        "loading": "Compiling diagnostic biomarkers...",
+        "empty": "No active screening record found.",
+        "error": "Report compilation failed. Retry."
+      },
+      "layout": "Scrollable dashboard featuring top risk indicator banner, confidence metric gauge, biomarker breakdown chips, clinical recommendation block, export card, and 'Scan Another' CTA."
+    }
+  ],
+  "images": {
+    "hero_retina": {
+      "url": "https://images.unsplash.com/photo-1682663947127-ac9d59d7f312?q=80&w=1200&auto=format&fit=crop",
+      "alt": "Retinal fundus medical imaging clinical scan"
+    },
+    "sample_low_risk": {
+      "url": "https://images.unsplash.com/photo-1483519173755-be893fab1f46?q=80&w=800&auto=format&fit=crop",
+      "alt": "Healthy retinal fundus scan"
+    },
+    "sample_signs_detected": {
+      "url": "https://images.unsplash.com/photo-1539036776273-021ec1d78bec?q=80&w=800&auto=format&fit=crop",
+      "alt": "Fundus scan with microaneurysms and exudates"
+    }
+  },
+  "instructions_to_main_agent": "Build RETINA-DX following Dark-First Utility DARK personality with obsidian backgrounds, cyan highlights, Barlow Condensed and Satoshi typography, sticky bottom CTAs, smooth reanimated neural scanner, pre-loaded sample fundus selector, and comprehensive exportable screening report."
+}
