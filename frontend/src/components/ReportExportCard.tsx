@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable, Share, Platform } from "react-native";
+import { View, Text, StyleSheet, Pressable, Share, Platform, ActivityIndicator } from "react-native";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 import { ScreeningResult } from "../types/screening";
 import { useTheme, makeStyles } from "../theme";
+import { buildReportHtml } from "../utils/buildReportHtml";
 
 interface ReportExportCardProps {
   result: ScreeningResult;
@@ -11,8 +14,49 @@ export function ReportExportCard({ result }: ReportExportCardProps) {
   const styles = useStyles();
   const { colors } = useTheme();
   const [copied, setCopied] = useState(false);
+  const [pdfState, setPdfState] = useState<"idle" | "generating" | "done" | "error">("idle");
 
   const isLowRisk = result.risk_level === "low_risk";
+
+  const handleDownloadPdf = async () => {
+    if (pdfState === "generating") return;
+    setPdfState("generating");
+    try {
+      const html = buildReportHtml(result);
+
+      if (Platform.OS === "web") {
+        // Opens the browser print dialog where the user can "Save as PDF"
+        await Print.printAsync({ html });
+      } else {
+        const { uri } = await Print.printToFileAsync({ html, base64: false });
+        const canShare = await Sharing.isAvailableAsync();
+        if (canShare) {
+          await Sharing.shareAsync(uri, {
+            mimeType: "application/pdf",
+            UTI: "com.adobe.pdf",
+            dialogTitle: `RETINA-DX Report ${result.scan_id}`,
+          });
+        } else {
+          await Print.printAsync({ uri });
+        }
+      }
+      setPdfState("done");
+    } catch (err) {
+      console.warn("PDF export error:", err);
+      setPdfState("error");
+    } finally {
+      setTimeout(() => setPdfState("idle"), 3000);
+    }
+  };
+
+  const pdfLabel =
+    pdfState === "generating"
+      ? "GENERATING PDF..."
+      : pdfState === "done"
+        ? "✓ PDF REPORT READY"
+        : pdfState === "error"
+          ? "PDF EXPORT FAILED — TRY AGAIN"
+          : "📄 DOWNLOAD PDF REPORT";
 
   const handleShare = async () => {
     const summaryText = `
@@ -114,14 +158,35 @@ ${result.disclaimer}
       </View>
 
       <Pressable
+        testID="download-pdf-btn"
+        onPress={handleDownloadPdf}
+        disabled={pdfState === "generating"}
+        style={({ pressed }) => [
+          styles.pdfButton,
+          pdfState === "error" && styles.pdfButtonError,
+          pressed && styles.pdfButtonPressed,
+        ]}
+      >
+        {pdfState === "generating" && (
+          <ActivityIndicator size="small" color={colors.onBrandPrimary} />
+        )}
+        <Text style={styles.pdfButtonText}>{pdfLabel}</Text>
+      </Pressable>
+
+      <Pressable
         testID="export-report-btn"
         onPress={handleShare}
         style={styles.shareButton}
       >
         <Text style={styles.shareButtonText}>
-          {copied ? "✓ SUMMARY COPIED TO CLIPBOARD" : "SHARE / EXPORT SUMMARY CARD"}
+          {copied ? "✓ SUMMARY COPIED TO CLIPBOARD" : "SHARE / COPY TEXT SUMMARY"}
         </Text>
       </Pressable>
+      <Text style={styles.pdfHint}>
+        {Platform.OS === "web"
+          ? "PDF opens in your browser's print dialog — choose “Save as PDF”."
+          : "PDF report can be saved or shared directly with your eye-care provider."}
+      </Text>
     </View>
   );
 }
@@ -204,6 +269,36 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurface,
     marginTop: 1,
   },
+  pdfButton: {
+    backgroundColor: colors.brandPrimary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginBottom: 8,
+    minHeight: 44,
+  },
+  pdfButtonError: {
+    backgroundColor: colors.error,
+  },
+  pdfButtonPressed: {
+    opacity: 0.85,
+  },
+  pdfButtonText: {
+    fontSize: 11,
+    fontWeight: "900",
+    color: colors.onBrandPrimary,
+    letterSpacing: 0.8,
+  },
+  pdfHint: {
+    fontSize: 9,
+    color: colors.muted,
+    textAlign: "center",
+    marginTop: 8,
+    lineHeight: 13,
+  },
   shareButton: {
     backgroundColor: colors.surfaceSecondary,
     borderWidth: 1,
@@ -211,6 +306,8 @@ const useStyles = makeStyles((colors) => ({
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: "center",
+    minHeight: 44,
+    justifyContent: "center",
   },
   shareButtonText: {
     fontSize: 11,

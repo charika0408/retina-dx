@@ -36,6 +36,11 @@ const dark = {
   info: "#3B82F6",
   onInfo: "#0A0E17",
 
+  // Lesion heatmap palette
+  lesionMicroaneurysm: "#FB7185",
+  lesionExudate: "#FBBF24",
+  lesionHemorrhage: "#EF4444",
+
   // Structural lines & borders
   border: "#223254",
   borderStrong: "#00E5FF",

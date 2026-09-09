@@ -1,0 +1,59 @@
+{
+  "summary": "Both new features fully verified. Backend: 9/9 pytest passing including deterministic lesion generation for sample_dr_02, empty lesions for sample_normal_01, and microaneurysm-only lesions for sample_dr_mild_03; /api/screenings records include the lesions field. Frontend: end-to-end flow works via public Expo preview (previous blank-screen issue is resolved). Lesion heatmap card renders subtitle '5 suspicious regions localized' with legend counts 3+1+1=5 for dr_02, and 'No suspicious regions localized' + 'FUNDUS CLEAR · NO LESIONS MAPPED' badge for normal_01. HEATMAP toggle switches between HEATMAP ON/OFF correctly. Download PDF button transitions idle -> '✓ PDF REPORT READY' and successfully triggers window.print on web with no JS errors. Share/copy button shows '✓ SUMMARY COPIED TO CLIPBOARD'. scan-another returns to exactly one upload-screen (no stale results). History modal opens and past scans re-render results. No uncaught console errors — only two React-Native-Web deprecation warnings.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "upload / results",
+        "issues": [
+          "The three curated Unsplash sample images (sample_normal_01, sample_dr_02, sample_dr_mild_03) are NOT actual retinal fundus photographs — they show a person at a slit-lamp, ophthalmic equipment, and similar stock photos. The lesion overlay ends up on unrelated content (face, machinery), which is visually misleading for a clinical prototype. Reference: /app/backend/server.py:122,145,168."
+        ]
+      }
+    ],
+    "react_native_issues": [
+      {
+        "component": "LesionHeatmapOverlay / other cards",
+        "issue": "React-Native-Web deprecation warning: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' Affects components using shadowColor/shadowOpacity/shadowRadius/shadowOffset. Reference: /app/frontend/src/components/LesionHeatmapOverlay.tsx:77-83,313-317 and /app/frontend/app/results.tsx:322-325."
+      },
+      {
+        "component": "LesionHeatmapOverlay (GlowMarker, tint, clearBadgeWrap)",
+        "issue": "React-Native-Web deprecation warning: 'props.pointerEvents is deprecated. Use style.pointerEvents'. Reference: /app/frontend/src/components/LesionHeatmapOverlay.tsx:67-68,135."
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_retina_api.py",
+    "/app/backend/tests/test_lesions_and_history.py",
+    "/app/test_reports/pytest/pytest_results_iteration4.xml",
+    "/app/test_reports/screens3/iter4_dr02_heatmap.jpeg",
+    "/app/test_reports/screens3/iter4_normal_heatmap.jpeg"
+  ],
+  "action_items": [
+    "Replace the three sample Unsplash URLs in SAMPLE_FUNDUS_DATA with actual retinal fundus images (or bundled local assets) so lesion overlays land on medically-relevant content. This is a demo-credibility issue.",
+    "Migrate deprecated shadow* style props to boxShadow on web (or wrap in Platform.select) in LesionHeatmapOverlay.tsx and results.tsx primaryCta to silence React-Native-Web warnings.",
+    "Move pointerEvents from props to style.pointerEvents in LesionHeatmapOverlay.tsx (lines 67, 68, 135).",
+    "Consider adding testID='scan-history-modal' explicitly documented in the request path (currently the modal renders and can be located via existing testIDs)."
+  ],
+  "critical_code_review_comments": [
+    "server.py generate_lesion_map is deterministic via random.Random(seed) — verified by two identical /api/predict calls returning identical lesion arrays.",
+    "PredictRequest input validation correctly returns 400 when no image/sample provided.",
+    "ScreeningRecord.lesions defaults to [] and is persisted to Mongo — verified via GET /api/screenings.",
+    "ReportExportCard has a robust clipboard fallback (execCommand for sandboxed browsers) and PDF handler correctly branches on Platform.OS === 'web'.",
+    "MongoDB _id is properly serialized via PyObjectId BeforeValidator; no ObjectId leakage in responses."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_lesions_and_history.py",
+    "/app/test_reports/iteration_4.json"
+  ],
+  "success_rate": {"backend": "100% (9/9)", "frontend": "100% of tested flows"},
+  "seed_data_creation": "New screening records inserted through live /api/predict calls for sample_dr_02, sample_normal_01, sample_dr_mild_03 during pytest and Playwright runs. No manual seeding.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "New lesion heatmap + PDF export features are fully functional. Only outstanding items are (1) non-fundus sample images and (2) two RN-Web deprecation warnings — both non-blocking. Public preview mounts correctly again; earlier iteration 3 blank-screen issue is resolved.",
+  "rca_of_issue": "N/A — no bugs found in the two new features."
+}

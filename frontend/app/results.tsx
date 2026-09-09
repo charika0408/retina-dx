@@ -8,13 +8,13 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Image } from "expo-image";
 import { useTheme, makeStyles } from "../src/theme";
 import { useScreening } from "../src/context/ScreeningContext";
 import { RiskBadge } from "../src/components/RiskBadge";
 import { BiomarkerCard } from "../src/components/BiomarkerCard";
 import { ReportExportCard } from "../src/components/ReportExportCard";
 import { ScanHistoryModal } from "../src/components/ScanHistoryModal";
+import { LesionHeatmapOverlay } from "../src/components/LesionHeatmapOverlay";
 
 export default function ResultsScreen() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function ResultsScreen() {
   const styles = useStyles();
   const { colors } = useTheme();
 
-  const { currentResult, clearSelection, setCurrentResult } = useScreening();
+  const { currentResult, clearSelection, setCurrentResult, samples } = useScreening();
   const [historyModalOpen, setHistoryModalOpen] = useState(false);
 
   // Fallback if accessed without scan
@@ -108,19 +108,13 @@ export default function ResultsScreen() {
           </Text>
         </View>
 
-        {/* Image Preview & Optic Disc Mapping Thumbnail */}
+        {/* Lesion Heatmap over evaluated fundus */}
         {currentResult.image_uri && (
-          <View style={styles.scanThumbnailBox}>
-            <Image
-              source={{ uri: currentResult.image_uri }}
-              style={styles.thumbnailImage}
-              contentFit="cover"
-            />
-            <View style={styles.thumbnailOverlay}>
-              <Text style={styles.thumbnailTag}>EVALUATED FUNDUS SCAN</Text>
-              <Text style={styles.thumbnailStage}>{currentResult.dr_grade}</Text>
-            </View>
-          </View>
+          <LesionHeatmapOverlay
+            imageUri={currentResult.image_uri}
+            lesions={currentResult.lesions ?? []}
+            drGrade={currentResult.dr_grade}
+          />
         )}
 
         {/* Detailed Retinal Biomarkers Card */}
@@ -181,7 +175,8 @@ export default function ResultsScreen() {
         visible={historyModalOpen}
         onClose={() => setHistoryModalOpen(false)}
         onSelectScan={(scan) => {
-          setCurrentResult(scan);
+          const sample = scan.sample_id ? samples.find((s) => s.id === scan.sample_id) : undefined;
+          setCurrentResult({ ...scan, image_uri: scan.image_uri ?? sample?.image_url });
         }}
       />
     </View>
@@ -258,38 +253,6 @@ const useStyles = makeStyles((colors) => ({
     color: colors.onSurface,
     lineHeight: 20,
     fontWeight: "600",
-  },
-  scanThumbnailBox: {
-    width: "100%",
-    height: 120,
-    borderRadius: 14,
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: colors.border,
-    marginVertical: 10,
-    backgroundColor: colors.surfaceSecondary,
-  },
-  thumbnailImage: {
-    width: "100%",
-    height: "100%",
-  },
-  thumbnailOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(10, 14, 23, 0.5)",
-    justifyContent: "flex-end",
-    padding: 10,
-  },
-  thumbnailTag: {
-    fontSize: 8,
-    fontWeight: "800",
-    color: colors.brandPrimary,
-    letterSpacing: 0.8,
-  },
-  thumbnailStage: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: colors.onSurface,
-    marginTop: 2,
   },
   recommendationsCard: {
     backgroundColor: colors.surfaceSecondary,

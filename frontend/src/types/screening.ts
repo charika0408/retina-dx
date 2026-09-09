@@ -21,6 +21,15 @@ export interface ModelMeta {
   version: string;
 }
 
+export interface Lesion {
+  type: "microaneurysm" | "exudate" | "hemorrhage";
+  x: number;
+  y: number;
+  radius: number;
+  intensity: number;
+  label: string;
+}
+
 export interface ScreeningResult {
   success: boolean;
   scan_id: string;
@@ -32,6 +41,7 @@ export interface ScreeningResult {
   message: string;
   biomarkers: Biomarkers;
   recommendations: string[];
+  lesions?: Lesion[];
   disclaimer: string;
   model_meta: ModelMeta;
   created_at: string;

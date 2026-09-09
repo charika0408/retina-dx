@@ -16,6 +16,7 @@ Build a premium, dark-themed mobile app (Expo + FastAPI + MongoDB) called **RETI
 - `frontend/src/` — `theme.ts` (design tokens), `api/retinaApi.ts`, `context/ScreeningContext.tsx`, `components/*`
 
 ## What's Been Done
+- 2026-09 (fork, feature add): **Lesion Heatmap** — backend returns `lesions[]` (type/x/y/radius/intensity/label) per scan (hand-placed for the 3 curated samples, deterministic biomarker-seeded map for uploads; AI vision prompt also asks for lesions). New `LesionHeatmapOverlay` component: pulsing glow markers mapped onto the letterboxed image, HEATMAP ON/OFF toggle, per-type legend counts, "FUNDUS CLEAR" state. **PDF Report** — `buildReportHtml.ts` + expo-print: web opens print dialog (Save as PDF), native generates PDF and opens share sheet (expo-sharing). Replaced Unsplash stock photos with real public-domain fundus photographs (Wikimedia Commons). Tested via testing agent iteration 4 (all pass).
 - 2026-09 (fork): Fixed P0 blank-screen crash (bad import `@react-navigation/native` in `upload.tsx` → replaced with expo-router `usePathname`). Fixed stale route stack on "Scan Another" (`router.dismissTo('/upload')` + clearing result). Verified clipboard export on web. Full flow Landing → Upload → Analysis → Results → Scan Another verified via browser automation.
 - Earlier: backend, DB persistence, design system, all screens and components, testing iterations 1–3.
 
@@ -23,6 +24,6 @@ Build a premium, dark-themed mobile app (Expo + FastAPI + MongoDB) called **RETI
 - MVP complete and working in web preview. AI analysis runs in DEMO_MODE (simulated) — expected for hackathon.
 
 ## Backlog / Ideas
-- PDF export of the report card
-- Heatmap/lesion overlay on evaluated image
+- Scan comparison (side-by-side of two past scans)
+- One-tap demo reset (clear history)
 - Real AI vision path hardening (currently optional via toggle)
