@@ -6,7 +6,7 @@ Run after training:
 from pathlib import Path
 import os
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from ml.inference import predict_bytes
+from backend.ml.inference import predict_bytes
 
 app = FastAPI(title="RETINA-DX APTOS ML API", version="1.0.0")
 MODEL_PATH = Path(os.getenv("MODEL_PATH", "backend/models/aptos_efficientnet_b0.pt"))
