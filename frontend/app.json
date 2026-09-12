@@ -1,22 +1,22 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "RETINA-DX",
+    "slug": "retina-dx",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "frontend",
+    "scheme": "retina-dx",
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.emergent.retinadx.a8k3ru"
+      "bundleIdentifier": "com.charika.retinadx"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "package": "com.emergent.retinadx.a8k3ru"
+      "package": "com.charika.retinadx"
     },
     "web": {
       "bundler": "metro",
@@ -25,15 +25,7 @@
     },
     "plugins": [
       "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-image.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#000000"
-        }
-      ],
+      ["expo-splash-screen", {"image":"./assets/images/splash-image.png","imageWidth":200,"resizeMode":"contain","backgroundColor":"#000000"}],
       "expo-font",
       "expo-image",
       "expo-secure-store",
@@ -43,8 +35,6 @@
       "@react-native-vector-icons/feather",
       "expo-sharing"
     ],
-    "experiments": {
-      "typedRoutes": true
-    }
+    "experiments": {"typedRoutes": true}
   }
 }
