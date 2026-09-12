@@ -117,7 +117,7 @@ cd frontend
 eas build --platform android --profile production
 ```
 
-Google Play uses `.aab` for new app releases; an APK is for direct installation/testing. citeturn0search3
+Google Play uses `.aab` for new app releases; an APK is for direct installation/testing.
 
 ## Offline requirement checklist
 
