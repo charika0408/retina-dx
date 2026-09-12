@@ -2,17 +2,18 @@
 
 ## 1. Backend
 
-Run MongoDB and the FastAPI backend. Put `MONGO_URL`, `DB_NAME`, and `EMERGENT_LLM_KEY` in `backend/.env`.
+Run MongoDB and the FastAPI backend. Put only `MONGO_URL` and `DB_NAME` in `backend/.env`.
 
-Train the APTOS 2019 model once:
+Train the APTOS 2019 EfficientNet-B0 model once:
 
 ```bash
+pip install -r backend/requirements.txt
 pip install -r backend/ml/requirements-aptos.txt
 python backend/ml/download_aptos.py --output data/aptos2019
 python backend/ml/train_aptos.py --data-dir data/aptos2019 --epochs 10
 ```
 
-The trained checkpoint is created at `backend/models/aptos_efficientnet_b0.pt`. Do not commit the checkpoint to GitHub; keep it on the server or model storage.
+The trained checkpoint is created at `backend/models/aptos_efficientnet_b0.pt`. Do not commit the checkpoint to GitHub; keep it on the backend server or model storage.
 
 Start the API:
 
@@ -20,7 +21,7 @@ Start the API:
 uvicorn backend.server:app --host 0.0.0.0 --port 8000
 ```
 
-The `/api/predict` flow now uses the APTOS-trained EfficientNet-B0 model first when a checkpoint exists. If that model fails, the app falls back to the existing Emergent Vision integration. Demo/sample mode remains available.
+Real uploaded retinal images are analyzed **only by the APTOS-trained EfficientNet-B0 model**. There is no external LLM or Emergent fallback. If the model is missing, `/api/predict` returns an error instead of using another AI engine.
 
 ## 2. Connect the Expo app
 
@@ -79,10 +80,10 @@ Create a production AAB:
 eas build --platform android --profile production
 ```
 
-Create a Google Play Console developer account, create an Android app, complete the store listing/content declarations, and upload the generated `.aab` under the appropriate release track. Google may require testing before production release depending on the developer account and current Play policies.
+Create a Google Play Console developer account, create an Android app, complete the store listing/content declarations, and upload the generated `.aab` under the appropriate release track.
 
 ## Important
 
-The Android app is a client. The APTOS PyTorch model should run on the backend server, not inside the APK. The server must therefore be deployed on a public HTTPS endpoint before a published app can analyze images outside your local network.
+The Android app is a client. The APTOS PyTorch model runs on the backend server, not inside the APK. The server must therefore be deployed on a public HTTPS endpoint before a published app can analyze images outside your local network.
 
 RETINA-DX is a research/screening prototype and must not be presented as a medical diagnostic device without appropriate clinical validation and regulatory review.
