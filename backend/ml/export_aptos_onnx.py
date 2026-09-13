@@ -38,6 +38,8 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     dummy = torch.randn(1, 3, 224, 224)
 
+    # Use the stable TorchScript-style exporter and embed weights in the ONNX
+    # file so the React Native app only needs one model asset (no .onnx.data).
     torch.onnx.export(
         model,
         dummy,
@@ -46,10 +48,12 @@ def main():
         output_names=["logits"],
         opset_version=17,
         do_constant_folding=True,
+        dynamo=False,
+        external_data=False,
     )
 
     print(f"Saved ONNX model: {args.output}")
-    print("Copy this file into the Expo app before building the APK.")
+    print("Weights are embedded in the ONNX file; no external .onnx.data file is required.")
 
 
 if __name__ == "__main__":
